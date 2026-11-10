@@ -231,6 +231,35 @@
             color: var(--text-dim);
         }
 
+        .badge-pill.interactive {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .badge-pill.interactive:hover {
+            border-color: var(--ts);
+            color: #fff;
+            background: rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .hdr-month-input {
+            background: transparent;
+            border: none;
+            color: var(--ts);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            padding: 0;
+            color-scheme: dark;
+        }
+
         .btn-icon {
             background: var(--glass);
             border: 1px solid var(--border);
@@ -665,8 +694,43 @@
             }
         }
 
-        @media (max-width: 768px) {
+        /* Galaxy Z Fold / Foldable / Tablet (500px to 950px) - 3 circles side-by-side */
+        @media (min-width: 500px) and (max-width: 950px) {
+            .grid-4 {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 12px !important;
+            }
+            .card {
+                padding: 14px 10px !important;
+                border-radius: 16px !important;
+            }
+            .progress-circle-container {
+                width: 95px !important;
+                height: 95px !important;
+                margin: 0 auto 10px !important;
+            }
+            .card-title {
+                font-size: 11.5px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            .percentage-text {
+                font-size: 17px !important;
+            }
+            .percentage-text span {
+                font-size: 9px !important;
+            }
+            .kpi-sub {
+                font-size: 10.5px !important;
+            }
+            #dash-ts-day-info, #dash-dia-day-info, #dash-gold-day-info, #dash-sil-day-info {
+                font-size: 11px !important;
+                padding: 2px 4px !important;
+            }
+        }
 
+        @media (max-width: 499px) {
             .grid-4,
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -916,9 +980,17 @@
                 <h2>Incentive Pro</h2>
             </div>
             <div class="user-nav">
-                <div class="badge-pill" id="hdrPharmacy">—</div>
-                <div class="badge-pill" id="hdrPeriod">—</div>
-                <button class="btn-icon" onclick="doLogout()"><svg width="20" height="20" fill="none"
+                <div class="badge-pill interactive" id="hdrPharmacyWrap" onclick="promptChangePharmacy()" title="اضغط لتغيير الصيدلية النشطة (Click to change Active Pharmacy)">
+                    <span>🏪</span>
+                    <strong id="hdrPharmacy" style="color: var(--ts);">—</strong>
+                    <span style="font-size: 11px; opacity: 0.8;">✏️</span>
+                </div>
+                <div class="badge-pill interactive" id="hdrPeriodWrap" title="اختر الشهر لتحديث البيانات فوراً (Pick month to switch data)">
+                    <span>📅</span>
+                    <input type="month" id="hdrMonthInput" class="hdr-month-input" onchange="changeActiveMonth(this.value)">
+                    <span id="hdrPeriod" style="display:none;">—</span>
+                </div>
+                <button class="btn-icon" onclick="doLogout()" title="تسجيل الخروج (Logout)"><svg width="20" height="20" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
@@ -948,7 +1020,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <span>صيدلية: <strong id="dash-pharmacy">P0066</strong> | منطقة: <span id="dash-area">—</span> |
+                    <span>صيدلية: <strong id="dash-pharmacy" onclick="promptChangePharmacy()" style="cursor: pointer; color: var(--ts); text-decoration: underline dotted;" title="اضغط لتغيير الصيدلية النشطة">—</strong> | منطقة: <span id="dash-area">—</span> |
                         Leap: <strong id="d-leap-num">—</strong> <span id="d-boost-msg"
                             style="margin-right:10px; color:var(--gold); font-size:12px;"></span></span>
                 </div>
@@ -1305,7 +1377,14 @@
                     </div>
 
                     <div class="card">
-                        <div class="card-title">📝 Sales Registration</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                            <div class="card-title" style="margin: 0;">📝 Sales Registration</div>
+                            <div style="font-size: 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); padding: 5px 12px; border-radius: 8px; display: flex; gap: 8px; align-items: center;">
+                                <span>الصيدلية النشطة: <strong id="ach-active-pharma" style="color: var(--ts); cursor: pointer;" onclick="promptChangePharmacy()" title="اضغط لتغيير الصيدلية">—</strong></span>
+                                <span style="opacity:0.4;">|</span>
+                                <span>الشهر: <strong id="ach-active-month" style="color: var(--diamond);">—</strong></span>
+                            </div>
+                        </div>
                         <input type="hidden" id="a-edit-date">
                         <div class="form-grid" style="margin-top: 20px;">
                             <div class="form-field"><label>Date</label><input type="date" id="a-date"></div>
@@ -1347,9 +1426,9 @@
                     <div class="card">
                         <div class="card-title">🎯 Target Settings</div>
                         <div class="form-grid" style="margin-top: 20px;">
-                            <div class="form-field"><label>Pharmacy ID</label><input type="text" id="t-location"></div>
-                            <div class="form-field"><label>Month</label><input type="month" id="t-month"
-                                    onchange="changeTargetMonth()"></div>
+                            <div class="form-field"><label>Pharmacy ID (تفعيل الصيدلية)</label><input type="text" id="t-location" onchange="setActivePharmacy(this.value)" placeholder="P0066"></div>
+                            <div class="form-field"><label>Month (شهر التارجت)</label><input type="month" id="t-month"
+                                    onchange="changeActiveMonth(this.value)"></div>
                             <div class="form-field"><label>TS Target</label><input type="number" id="t-ts"></div>
                             <div class="form-field"><label>Diamond Target</label><input type="number" id="t-diamond">
                             </div>
@@ -1660,20 +1739,85 @@
         function clearCalcActive() { state.isCalcActive = false; state.activeCalcKey = null; updateCalcUI(); }
 
         async function doLogin() {
-            const pid = document.getElementById('pharmacyId').value.toUpperCase();
+            const pid = document.getElementById('pharmacyId').value.toUpperCase().trim();
             const month = document.getElementById('loginMonth').value;
             try {
                 appConfig = await apiGet('/api/config');
-                state.pharmacyId = pid.trim();
-                state.month = month;
-                document.getElementById('hdrPharmacy').textContent = state.pharmacyId;
-                document.getElementById('hdrPeriod').textContent = state.month;
+                syncGlobalActivePharmacy(pid);
+                syncGlobalActiveMonth(month);
+
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
                 document.getElementById('s-api-base').value = API_BASE;
 
                 await loadMonthData(state.pharmacyId, state.month);
             } catch (e) { document.getElementById('loginError').textContent = 'Error: ' + e.message; }
+        }
+
+        function syncGlobalActivePharmacy(pid) {
+            if (!pid) return;
+            state.pharmacyId = pid.trim().toUpperCase();
+            localStorage.setItem('last_pharmacy', state.pharmacyId);
+
+            const hdrPharma = document.getElementById('hdrPharmacy');
+            if (hdrPharma) hdrPharma.textContent = state.pharmacyId;
+
+            const dashPharma = document.getElementById('dash-pharmacy');
+            if (dashPharma) dashPharma.textContent = state.pharmacyId;
+
+            const tLoc = document.getElementById('t-location');
+            if (tLoc) tLoc.value = state.pharmacyId;
+
+            const achPharma = document.getElementById('ach-active-pharma');
+            if (achPharma) achPharma.textContent = state.pharmacyId;
+
+            const loginPid = document.getElementById('pharmacyId');
+            if (loginPid) loginPid.value = state.pharmacyId;
+        }
+
+        function syncGlobalActiveMonth(month) {
+            if (!month) return;
+            state.month = month;
+            localStorage.setItem('last_month', month);
+
+            const hdrPeriod = document.getElementById('hdrPeriod');
+            if (hdrPeriod) hdrPeriod.textContent = month;
+
+            const hdrMonthInput = document.getElementById('hdrMonthInput');
+            if (hdrMonthInput) hdrMonthInput.value = month;
+
+            const tMonth = document.getElementById('t-month');
+            if (tMonth) tMonth.value = month;
+
+            const loginMonth = document.getElementById('loginMonth');
+            if (loginMonth) loginMonth.value = month;
+
+            const achMonth = document.getElementById('ach-active-month');
+            if (achMonth) achMonth.textContent = month;
+        }
+
+        async function promptChangePharmacy() {
+            const current = state.pharmacyId || '';
+            const newPid = prompt('أدخل رقم الصيدلية الجديد لتفعيله فوراً في كافة الأقسام (Pharmacy ID):', current);
+            if (newPid && newPid.trim().toUpperCase() !== current) {
+                await setActivePharmacy(newPid.trim().toUpperCase());
+            }
+        }
+
+        async function setActivePharmacy(pid) {
+            if (!pid) return;
+            syncGlobalActivePharmacy(pid);
+            showToast('جاري تفعيل صيدلية ' + state.pharmacyId + ' لشهر ' + state.month + '...', 'info');
+            await loadMonthData(state.pharmacyId, state.month);
+            showToast('تم تفعيل صيدلية ' + state.pharmacyId + ' بنجاح ✅', 'success');
+        }
+
+        async function changeActiveMonth(newMonth) {
+            if (!newMonth) return;
+            syncGlobalActiveMonth(newMonth);
+            showToast('جاري تحميل بيانات شهر ' + newMonth + '...', 'info');
+            await loadMonthData(state.pharmacyId, state.month);
+            showToast('تم تحديث بيانات شهر ' + newMonth + ' بنجاح ✅', 'success');
         }
 
         async function loadMonthData(pharmacy, month) {
@@ -1828,6 +1972,16 @@
                 boostMsgEl.textContent = pcts.ts >= 90 ? 'Achievement Unlocked ✅' : 'TS < 90% (Payout Locked 🔒)';
                 boostMsgEl.style.color = pcts.ts >= 90 ? 'var(--success)' : 'var(--danger)';
             }
+
+            // Sync active pharmacy and area across all views
+            const dashPharmaEl = document.getElementById('dash-pharmacy');
+            if (dashPharmaEl) dashPharmaEl.textContent = state.pharmacyId || '—';
+            const dashAreaEl = document.getElementById('dash-area');
+            if (dashAreaEl) dashAreaEl.textContent = state.target?.area || '—';
+            const achPharmaEl = document.getElementById('ach-active-pharma');
+            if (achPharmaEl) achPharmaEl.textContent = state.pharmacyId || '—';
+            const achMonthEl = document.getElementById('ach-active-month');
+            if (achMonthEl) achMonthEl.textContent = state.month || '—';
 
             renderAchTable();
             updateCalcUI();
